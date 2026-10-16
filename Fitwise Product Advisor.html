@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Fitwise – AI-powered product advisor for laptops, smartphones, tablets, headphones and smartwatches.">
+<title>Fitwise Product Advisor</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<style>
+:root{color-scheme:light;--bg:#F2F5F7;--card:#fff;--ink:#14202B;--mut:#5B6B79;--line:#DCE3E9;--acc:#0E7C86;--soft:#E1F1F2;--warn:#C8431F;--gold:#E0A100;--green:#1A7F4B;--r:14px}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0E1620;--card:#172230;--ink:#E7EDF2;--mut:#98A8B6;--line:#263544;--acc:#3CC4CF;--soft:#173340;--warn:#FF8A63}
+*{box-sizing:border-box}html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 'DM Sans',system-ui,sans-serif}
+h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.15;margin:0 0 .5em}
+h1{font-size:clamp(26px,5vw,44px)}h2{font-size:22px}h3{font-size:17px}
+a{color:inherit}.mut,small{color:var(--mut)}
+header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:10px 20px;flex-wrap:wrap}
+.logo{font:700 21px 'Bricolage Grotesque';margin-right:auto;text-decoration:none;color:var(--acc);display:flex;align-items:center;gap:6px}
+.logo-icon{width:28px;height:28px;background:var(--acc);border-radius:8px;display:grid;place-items:center;color:#fff;font-size:14px}
+nav{display:flex;gap:2px;flex-wrap:wrap}
+nav a{padding:7px 12px;border-radius:99px;text-decoration:none;color:var(--mut);font-weight:500;transition:.15s}
+nav a.on,nav a:hover{background:var(--soft);color:var(--acc)}
+main{max-width:1180px;margin:0 auto;padding:24px 20px 110px;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--acc);color:#fff;font:700 14px 'DM Sans';padding:10px 18px;border-radius:99px;cursor:pointer;text-decoration:none;transition:.15s}
+.btn:hover{filter:brightness(1.1)}.btn.o{background:none;color:var(--acc);box-shadow:inset 0 0 0 1.5px var(--acc)}.btn.d{background:var(--warn);color:#fff}.btn.s{padding:6px 12px;font-size:13px}.btn.g{background:var(--green);color:#fff}
+.ib{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;cursor:pointer;padding:4px 9px;font:inherit;transition:.15s}.ib:hover{background:var(--soft)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.img{height:140px;display:grid;place-items:center;font-size:60px;position:relative;background:linear-gradient(135deg,hsl(var(--h) 60% 80%),hsl(calc(var(--h) + 40) 55% 65%))}
+:root[data-theme=dark] .img{background:linear-gradient(135deg,hsl(var(--h) 40% 25%),hsl(calc(var(--h) + 40) 35% 20%))}
+.badge{position:absolute;top:10px;right:10px;background:var(--card);color:var(--acc);font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;box-shadow:0 2px 8px #0002}
+.wish-btn{position:absolute;top:10px;left:10px;background:var(--card);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;display:grid;place-items:center;box-shadow:0 2px 8px #0002;transition:.15s}
+.wish-btn:hover{transform:scale(1.15)}
+.bd{padding:14px;display:flex;flex-direction:column;gap:8px;height:calc(100% - 140px)}.bd h3{margin:0}
+.price{font:700 20px 'Bricolage Grotesque'}.star{color:var(--gold);letter-spacing:1px}
+.tg{display:flex;flex-wrap:wrap;gap:5px}.tg span{background:var(--soft);color:var(--acc);font-size:12px;padding:2px 8px;border-radius:99px}
+.pc ul,.rs{margin:0;padding-left:18px;font-size:13px}.neg{color:var(--warn)}.rs li{margin:3px 0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sp{margin-left:auto}
+.hero{display:grid;gap:16px;padding:36px;border-radius:20px;background:linear-gradient(135deg,var(--soft),var(--card));border:1px solid var(--line);margin-bottom:24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-60px;top:-60px;width:260px;height:260px;background:radial-gradient(circle,var(--acc)22,transparent 70%);opacity:.08;pointer-events:none}
+.hero p{max-width:56ch;margin:0}.hero-stats{display:flex;gap:24px;flex-wrap:wrap;margin-top:8px}
+.hero-stat{text-align:center}.hero-stat b{display:block;font:700 28px 'Bricolage Grotesque';color:var(--acc)}.hero-stat small{color:var(--mut)}
+.bar{height:7px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);transition:width .6s ease}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 15%,transparent)}
+.bar-f{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.form{display:grid;gap:16px;max-width:820px}
+fieldset{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:var(--card);margin:0}
+legend{font:700 16px 'Bricolage Grotesque';padding:0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip input{position:absolute;opacity:0}.chip span{display:inline-block;padding:6px 14px;border:1px solid var(--line);border-radius:99px;cursor:pointer;transition:.15s}
+.chip input:checked+span{background:var(--acc);color:#fff;border-color:var(--acc)}.chip input:focus-visible+span{outline:2px solid var(--acc)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fld{display:grid;gap:4px;font-size:13px;color:var(--mut)}
+.prio{list-style:decimal;padding-left:26px;margin:0}.prio li{padding:6px 0;border-bottom:1px solid var(--line);display:list-item}.prio li::marker{font-weight:700;color:var(--acc)}.prio li>span:last-child{float:right}
+.best-c{display:grid;grid-template-columns:auto 1fr;gap:22px;padding:24px;border:2px solid var(--acc);margin-bottom:20px;border-radius:var(--r)}
+.ring{width:104px;height:104px;border-radius:50%;background:conic-gradient(var(--acc) calc(var(--v)*1%),var(--line) 0);display:grid;place-items:center;position:relative;font:700 24px 'Bricolage Grotesque'}
+.ring::before{content:'';position:absolute;inset:9px;background:var(--card);border-radius:50%}.ring span{position:relative}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:12px 0 26px}.tiers .card{padding:14px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:560px;background:var(--card)}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th:first-child{position:sticky;left:0;background:var(--card);z-index:1}td.best{background:var(--soft);font-weight:700;color:var(--acc)}
+.sk{height:200px;border-radius:var(--r);background:linear-gradient(90deg,var(--line),var(--soft),var(--line));background-size:200% 100%;animation:sh 1.1s infinite}@keyframes sh{to{background-position:-200% 0}}
+#tray{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;display:none;gap:12px;align-items:center;z-index:30;box-shadow:0 8px 28px #0006}
+#tray .btn{background:var(--bg);color:var(--ink)}
+.toast{position:fixed;top:70px;right:16px;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:50;animation:fadeIn .2s;font-size:14px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}.rv{border-top:1px solid var(--line);padding:12px 0}
+.rv-meta{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.rv-avatar{width:36px;height:36px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:700;color:var(--acc);font-size:14px;flex-shrink:0}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}
+.score-card{background:var(--soft);border-radius:10px;padding:12px;text-align:center}
+.score-card b{display:block;font:700 26px 'Bricolage Grotesque';color:var(--acc)}.score-card small{color:var(--mut);font-size:12px}
+.chat-wrap{position:fixed;bottom:calc(70px + env(safe-area-inset-bottom,0px));right:20px;z-index:25;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.chat-bubble{width:340px;max-height:480px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 40px #0003;overflow:hidden;animation:fadeIn .2s}
+.chat-head{background:var(--acc);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px;font-weight:700}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px}
+.msg{max-width:85%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4}
+.msg.bot{background:var(--soft);color:var(--ink);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:var(--acc);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-in{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line)}
+.chat-in input{border-radius:99px;padding:7px 12px;font-size:13px}
+.chat-toggle{width:52px;height:52px;border-radius:50%;background:var(--acc);color:#fff;border:none;cursor:pointer;font-size:22px;box-shadow:0 4px 16px #0003;display:grid;place-items:center;transition:.15s}
+.chat-toggle:hover{transform:scale(1.08)}
+.prog-steps{display:flex;gap:0;margin-bottom:24px;counter-reset:step}
+.prog-step{flex:1;text-align:center;font-size:12px;color:var(--mut);position:relative;padding-top:32px}
+.prog-step::before{counter-increment:step;content:counter(step);position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;background:var(--line);color:var(--mut);display:grid;place-items:center;font-weight:700;font-size:12px;z-index:1}
+.prog-step::after{content:'';position:absolute;top:11px;left:calc(50% + 12px);right:calc(-50% + 12px);height:2px;background:var(--line)}
+.prog-step:last-child::after{display:none}
+.prog-step.done::before{background:var(--acc);color:#fff}
+.prog-step.done::after{background:var(--acc)}
+.prog-step.active::before{background:var(--acc);color:#fff;box-shadow:0 0 0 4px var(--soft)}
+.tab-bar{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:16px}
+.tab{padding:8px 16px;border:none;background:none;cursor:pointer;font:500 14px 'DM Sans';color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc)}
+.budget-meter{background:var(--soft);border-radius:12px;padding:16px;margin:12px 0}
+.budget-bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0}
+.budget-bar i{display:block;height:100%;border-radius:99px;transition:width .5s ease}
+.cat-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.cat-pill{padding:8px 16px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-weight:500;font-size:14px;transition:.15s}
+.cat-pill.on,.cat-pill:hover{background:var(--soft);border-color:var(--acc);color:var(--acc)}
+.wishlist-count{background:var(--warn);color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;display:inline-grid;place-items:center;margin-left:2px;vertical-align:middle}
+.diff-badge{font-size:11px;padding:2px 7px;border-radius:99px;font-weight:700}
+.diff-badge.up{background:#dcfce7;color:#166534}.diff-badge.dn{background:#fee2e2;color:#991b1b}
+:root[data-theme=dark] .diff-badge.up{background:#14532d;color:#86efac}
+:root[data-theme=dark] .diff-badge.dn{background:#7f1d1d;color:#fca5a5}
+.spec-table{width:100%;border-collapse:collapse}
+.spec-table tr:nth-child(even){background:var(--soft)}
+.spec-table td,.spec-table th{padding:8px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.spec-table th{width:40%;color:var(--mut);font-weight:500}
+.print-only{display:none}
+footer{background:var(--card);border-top:1px solid var(--line);padding:32px 20px;margin-top:40px}
+.footer-inner{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+.footer-brand p{color:var(--mut);font-size:13px;margin:8px 0 0}
+.footer-links h4{font-size:14px;margin:0 0 10px}
+.footer-links a{display:block;color:var(--mut);text-decoration:none;font-size:13px;margin-bottom:6px}
+.footer-links a:hover{color:var(--acc)}
+.footer-bottom{max-width:1180px;margin:16px auto 0;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--mut)}
+.modal-bg{position:fixed;inset:0;background:#0007;z-index:40;display:grid;place-items:center;padding:20px;animation:fadeIn .15s}
+.modal{background:var(--card);border-radius:var(--r);padding:24px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;position:relative}
+.modal h3{margin-top:0}
+.close-btn{position:absolute;top:12px;right:12px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mut);line-height:1}
+.trend-up{color:var(--green)}.trend-dn{color:var(--warn)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--mut)}
+.empty-state .empty-icon{font-size:56px;margin-bottom:12px}
+.notification-dot{width:8px;height:8px;background:var(--warn);border-radius:50%;display:inline-block;margin-left:4px;vertical-align:middle}
+@media(max-width:720px){.bar-f,.two,.cols,.best-c{grid-template-columns:1fr}header{padding:8px 12px}.hero{padding:20px}.chat-bubble{width:calc(100vw - 40px)}.prog-steps{display:none}}
+@media print{#tray,.chat-wrap,header nav button,.btn:not(.print-btn){display:none!important}.print-only{display:block!important}body{background:#fff;color:#000}main{padding:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#/cat"><span class="logo-icon">F</span>Fitwise</a>
+  <nav>
+    <a href="#/cat" data-r="cat">Catalog</a>
+    <a href="#/adv" data-r="adv">Advisor</a>
+    <a href="#/res" data-r="res">Results</a>
+    <a href="#/cmp" data-r="cmp">Compare</a>
+    <a href="#/wish" data-r="wish">Wishlist <span class="wishlist-count" id="wc">0</span></a>
+    <a href="#/sess" data-r="sess">Saved</a>
+    <a href="#/admin" data-r="admin">Admin</a>
+  </nav>
+  <button class="ib" data-a="th" aria-label="Toggle dark mode">◐</button>
+</header>
+<main id="app"></main>
+<div id="tray"></div>
+<div class="chat-wrap" id="chatWrap">
+  <div class="chat-bubble" id="chatBox" style="display:none">
+    <div class="chat-head">
+      <span>🤖</span><span>Fitwise AI Assistant</span>
+      <button class="ib" style="margin-left:auto;background:none;border:none;color:#fff;cursor:pointer;font-size:18px" data-a="chatClose">×</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-in">
+      <input id="chatInput" placeholder="Ask me anything…" autocomplete="off">
+      <button class="btn s" data-a="chatSend">Send</button>
+    </div>
+  </div>
+  <button class="chat-toggle" data-a="chatToggle" aria-label="Open AI assistant" title="AI Assistant">💬</button>
+</div>
+<script>
+const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
+const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const money=n=>'₹'+Number(n).toLocaleString('en-IN');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const st=r=>'★'.repeat(Math.round(r))+'☆'.repeat(5-Math.round(r));
+const P=(id,cat,brand,name,price,rating,perf,dur,des,sup,batt,e,tags,use,pros,cons,specs)=>({id,cat,brand,name,price,rating,perf,dur,des,sup,batt,e,tags:tags.split(','),use:use.split(','),pros:pros.split('|'),cons:cons.split('|'),specs:Object.fromEntries(specs.split(';').map(s=>s.split(':').map(x=>x.trim())))});
+const SEED=[
+P(1,'Laptops','Apple','MacBook Air 13 M3',92000,4.8,8,9,10,9,18,'💻','Lightweight,Long battery,Fanless silent,Retina display','work,student,travel,creative','Superb battery life|Silent and light|Excellent display','Only two ports|Base 8 GB RAM','CPU:Apple M3;RAM:8 GB;Storage:256 GB SSD;Display:13.6 in Retina;Weight:1.24 kg'),
+P(2,'Laptops','Dell','XPS 15',150000,4.5,9,8,9,8,11,'🖥️','OLED display,Dedicated GPU,Premium build,Backlit keyboard','creative,work','Gorgeous OLED screen|Strong for editing|Solid build','Runs warm under load|Pricey','CPU:Core i7;RAM:16 GB;Storage:512 GB SSD;Display:15.6 in OLED;Weight:1.86 kg'),
+P(3,'Laptops','Lenovo','ThinkPad E14',62000,4.3,6,8,6,8,12,'⌨️','Backlit keyboard,Upgradeable RAM,Fingerprint reader','work,student','Best-in-class keyboard|Easy to upgrade|Great value','Plain screen|Plasticky lid','CPU:Ryzen 5;RAM:16 GB;Storage:512 GB SSD;Display:14 in FHD;Weight:1.41 kg'),
+P(4,'Laptops','ASUS','ROG Zephyrus G14',135000,4.6,10,7,8,7,9,'🎮','Dedicated GPU,120Hz display,OLED display,Backlit keyboard','gaming,creative','Desktop-class gaming|Compact for its power|Fast OLED panel','Fans get loud|Battery drains gaming','CPU:Ryzen 9;RAM:32 GB;Storage:1 TB SSD;Display:14 in 120Hz OLED;Weight:1.5 kg'),
+P(5,'Laptops','Acer','Aspire 5',45000,4.0,5,6,5,6,9,'💼','Backlit keyboard,Upgradeable RAM','student,everyday','Lowest price in range|Plenty of ports','Dim screen|Average battery','CPU:Core i5;RAM:8 GB;Storage:512 GB SSD;Display:15.6 in FHD;Weight:1.7 kg'),
+P(6,'Laptops','HP','Spectre x360 14',118000,4.4,7,8,9,7,14,'📓','Touchscreen,OLED display,Lightweight,Premium build,Fingerprint reader','work,travel,creative','Flexible 2-in-1|Beautiful OLED touchscreen|Stylus support','Speakers average|Fan noise at peak','CPU:Core Ultra 7;RAM:16 GB;Storage:1 TB SSD;Display:14 in OLED touch;Weight:1.4 kg'),
+P(7,'Smartphones','Apple','iPhone 15',67000,4.7,9,8,9,10,20,'📱','5G,Wireless charging,Great camera,Water resistant','everyday,creative,work','Years of software updates|Excellent video camera|Holds resale value','60Hz screen|Slower charging','Chip:A16 Bionic;Storage:128 GB;Display:6.1 in OLED;Camera:48 MP;Charging:20 W'),
+P(8,'Smartphones','Samsung','Galaxy S24',67000,4.6,9,8,9,8,22,'📲','5G,Wireless charging,Great camera,Water resistant,120Hz display','everyday,creative,gaming','Bright 120Hz display|Versatile cameras|7 years of updates','Base 128 GB only|Charging is modest','Chip:Snapdragon 8 Gen 3;Storage:128 GB;Display:6.2 in AMOLED 120Hz;Camera:50 MP;Charging:25 W'),
+P(9,'Smartphones','Google','Pixel 8a',42000,4.5,7,7,8,8,20,'🤳','5G,Great camera,Water resistant,Wireless charging','everyday,travel,student','Flagship-level photos|Clean software|Strong value','Slower charging|Average gaming','Chip:Tensor G3;Storage:128 GB;Display:6.1 in OLED 120Hz;Camera:64 MP;Charging:18 W'),
+P(10,'Smartphones','OnePlus','12',55000,4.5,10,7,8,6,26,'⚡','5G,Fast charging,Wireless charging,120Hz display,Water resistant','gaming,everyday','Fastest charging|Top-tier performance|Huge battery','Fewer updates|Inconsistent camera','Chip:Snapdragon 8 Gen 3;Storage:256 GB;Display:6.8 in AMOLED 120Hz;Camera:50 MP;Charging:100 W'),
+P(11,'Smartphones','Samsung','Galaxy A35',32000,4.1,5,7,6,7,24,'📞','5G,Water resistant,Expandable storage','everyday,student','Great price|MicroSD slot|Two-day battery','Slow in demanding apps|Basic low-light camera','Chip:Exynos 1380;Storage:128 GB;Display:6.6 in AMOLED 120Hz;Camera:50 MP;Charging:25 W'),
+P(12,'Smartphones','Nothing','Phone 2a',29000,4.2,6,6,8,6,22,'💡','5G,Fast charging,120Hz display','everyday,travel','Distinctive design|Smooth software|Fast charging','Limited service|No wireless charging','Chip:Dimensity 7200 Pro;Storage:128 GB;Display:6.7 in AMOLED 120Hz;Camera:50 MP;Charging:45 W'),
+P(13,'Tablets','Apple','iPad Air M2',60000,4.7,8,8,9,9,10,'📋','Touchscreen,Lightweight,Great camera,Fingerprint reader','student,creative,work','Powerful M2 chip|Excellent display|Apple Pencil support','No headphone jack|Expensive accessories','Chip:Apple M2;Storage:128 GB;Display:11 in Liquid Retina;RAM:8 GB;Weight:461 g'),
+P(14,'Tablets','Samsung','Galaxy Tab S9',65000,4.5,8,7,9,8,12,'🗒️','Touchscreen,120Hz display,Water resistant,Great camera','creative,work,student','Gorgeous AMOLED|S Pen included|DeX mode','Expensive|Android app gaps','Chip:Snapdragon 8 Gen 2;Storage:128 GB;Display:11 in AMOLED 120Hz;RAM:8 GB;Weight:498 g'),
+P(15,'Tablets','Lenovo','Tab P12',28000,4.1,6,7,7,6,14,'📱','Touchscreen,Lightweight,Long battery','student,everyday','Great battery life|Large screen|Affordable','Average performance|Basic cameras','Chip:Dimensity 7050;Storage:128 GB;Display:12.7 in LCD;RAM:8 GB;Weight:590 g'),
+P(16,'Tablets','Apple','iPad 10th Gen',45000,4.4,7,8,8,9,9,'🍎','Touchscreen,5G,Great camera,Fingerprint reader','student,everyday,work','Best-in-class software|Long support|Good cameras','Old connector|No ProMotion','Chip:A14 Bionic;Storage:64 GB;Display:10.9 in Liquid Retina;RAM:4 GB;Weight:477 g'),
+P(17,'Headphones','Sony','WH-1000XM5',26000,4.8,9,8,9,8,30,'🎧','Noise cancellation,Wireless,Foldable,Long battery','work,travel,everyday','Best-in-class ANC|Exceptional sound|30h battery','No 3.5mm on case|Expensive','Driver:30 mm;Frequency:4-40000 Hz;ANC:Yes;Bluetooth:5.2;Weight:250 g'),
+P(18,'Headphones','Bose','QuietComfort 45',22000,4.6,8,8,9,8,24,'🎵','Noise cancellation,Wireless,Foldable,Long battery','work,travel','Comfortable for long wear|Excellent ANC|Clear calls','Average soundstage|No LDAC','Driver:40 mm;Frequency:20-20000 Hz;ANC:Yes;Bluetooth:5.1;Weight:238 g'),
+P(19,'Headphones','Apple','AirPods Max',55000,4.5,8,9,10,9,20,'🎼','Noise cancellation,Wireless,Premium build','work,travel,creative','Spatial audio|Premium build|Seamless Apple ecosystem','Very expensive|Heavy|Not foldable','Driver:40 mm;Frequency:20-20000 Hz;ANC:Yes;Bluetooth:5.0;Weight:385 g'),
+P(20,'Headphones','Sennheiser','HD 560S',9000,4.4,9,7,7,7,0,'🎤','Wired,Open back,Wide soundstage','creative,work','Audiophile sound|Accurate imaging|Affordable','Wired only|Leaks sound|No ANC','Driver:38 mm;Frequency:6-38000 Hz;ANC:No;Impedance:120 Ohm;Weight:240 g'),
+P(21,'Headphones','JBL','Tune 770NC',7000,4.0,6,6,7,6,44,'🔊','Noise cancellation,Wireless,Foldable,Long battery','student,everyday','Very long battery|Affordable ANC|Punchy bass','Average ANC quality|Plasticky build','Driver:40 mm;Frequency:20-20000 Hz;ANC:Yes;Bluetooth:5.3;Weight:220 g'),
+P(22,'Smartwatches','Apple','Watch Series 9',42000,4.7,9,8,9,10,18,'⌚','Heart rate,GPS,ECG,Crash detection,Water resistant','everyday,work,creative','Best health sensors|Huge app ecosystem|Bright display','iPhone only|1-2 day battery','Chip:S9;Display:1.9 in LTPO OLED;GPS:Yes;Water:50m;Weight:38.8 g'),
+P(23,'Smartwatches','Samsung','Galaxy Watch 6',22000,4.4,8,7,8,8,40,'🕐','Heart rate,GPS,ECG,Sleep tracking,Water resistant','everyday,work','Works with Android|Good health tracking|Rotating bezel','Short battery|Samsung Health lock-in','Chip:Exynos W930;Display:1.5 in AMOLED;GPS:Yes;Water:5ATM;Weight:59 g'),
+P(24,'Smartwatches','Garmin','Forerunner 265',35000,4.6,8,9,7,8,13,'🏃','Heart rate,GPS,Long battery,Water resistant','everyday,travel','Excellent GPS accuracy|Training metrics|Durable','Bulky design|Basic smartwatch features','Chip:Garmin;Display:1.3 in AMOLED;GPS:Yes;Water:5ATM;Weight:49 g'),
+P(25,'Smartwatches','Noise','ColorFit Ultra 3',3500,3.8,5,5,6,5,7,'⏱️','Heart rate,GPS,Water resistant','student,everyday','Very affordable|Large display|Many sports modes','Inaccurate sensors|Short battery|Cheap build','Chip:RTK8762D;Display:1.96 in TFT;GPS:No;Water:IP68;Weight:45 g')
+];
+const PN={price:'Price',perf:'Performance',dur:'Durability',des:'Design',sup:'After-sales support'};
+const USES=['work','gaming','creative','student','travel','everyday'];
+const DEAL=[['r','Rating below 4.2',p=>p.rating<4.2],['b','Battery life under 12 h',p=>p.batt<12],['s','Support score under 7',p=>p.sup<7],['o','Any price over my budget',(p,q)=>p.price>q.max]];
+let S={
+  prods:ld('fw_p',null)||SEED,
+  cats:ld('fw_c',null)||['Laptops','Smartphones','Tablets','Headphones','Smartwatches'],
+  sess:ld('fw_s',[]),
+  wish:ld('fw_w',[]),
+  reviews:ld('fw_rv',{}),
+  cmp:[],
+  f:{q:'',cat:'',brand:'',sort:'pop'},
+  q:ld('fw_q',null)||{cat:'Laptops',min:0,max:100000,use:'work',must:[],nice:[],brands:[],prio:['price','perf','dur','des','sup'],deal:[]},
+  cur:null,edit:null,chatOpen:false,chatHistory:[]
+};
+const save=()=>{sv('fw_p',S.prods);sv('fw_c',S.cats);sv('fw_s',S.sess);sv('fw_w',S.wish);sv('fw_rv',S.reviews)};
+
+function rec(q){
+  const L=S.prods.filter(p=>p.cat==q.cat),pr=L.map(p=>p.price),lo=Math.min(...pr),hi=Math.max(...pr);
+  const w=Object.fromEntries(q.prio.map((k,i)=>[k,5-i])),out=[],ex=[];
+  L.forEach(p=>{
+    const bad=DEAL.filter(d=>q.deal.includes(d[0])&&d[2](p,q));
+    const v={price:hi>lo?1-(p.price-lo)/(hi-lo):1,perf:p.perf/10,dur:p.dur/10,des:p.des/10,sup:p.sup/10};
+    const pri=q.prio.reduce((a,k)=>a+w[k]*v[k],0)/15;
+    const bf=p.price<=q.max?1:Math.max(0,1-(p.price-q.max)/(q.max*.25));
+    const miss=q.must.filter(t=>!p.tags.includes(t));
+    const mu=q.must.length?1-miss.length/q.must.length:1;
+    const nh=q.nice.filter(t=>p.tags.includes(t));
+    const nu=q.nice.length?nh.length/q.nice.length:1;
+    const bm=!q.brands.length||q.brands.includes(p.brand);
+    const um=p.use.includes(q.use);
+    let s=100*(.28*bf+.3*pri+.2*mu+.08*nu+.06*(bm?1:0)+.08*(um?1:.4));
+    s*=.6+.4*mu;
+    const r=[p.price<=q.max?`${money(p.price)} fits your ${money(q.max)} budget`:`!${money(p.price-q.max)} over your budget`];
+    q.prio.slice(0,2).forEach(k=>{if(v[k]>=.7)r.push(k=='price'?'One of the lowest prices in category':`Strong ${PN[k].toLowerCase()} (${p[k]}/10)`)});
+    if(q.must.length)r.push(miss.length?`!Missing: ${miss.join(', ')}`:`Has all ${q.must.length} must-have features`);
+    if(nh.length)r.push(`Includes ${nh.length} of ${q.nice.length} nice-to-haves`);
+    if(q.brands.length&&bm)r.push(`Preferred brand: ${p.brand}`);
+    if(um)r.push(`Well suited to ${q.use} use`);
+    const o={p,s:Math.round(Math.min(99,Math.max(1,s))),r,bad};
+    (bad.length?ex:out).push(o);
+  });
+  return{out:out.sort((a,b)=>b.s-a.s),ex};
+}
+const mp=()=>S.cur?Object.fromEntries(rec(S.cur.q).out.map(o=>[o.p.id,o])):{};
+const rl=r=>r.map(x=>x[0]=='!'?`<li class=neg>${x.slice(1)}</li>`:`<li>${x}</li>`).join('');
+
+const card=(p,o)=>`<article class="card pc" style="display:flex;flex-direction:column">
+<div class="img" style="--h:${p.id*47%360}">${p.e}
+<button class="wish-btn" data-a="toggleWish" data-i="${p.id}" aria-label="Wishlist">${S.wish.includes(p.id)?'♥':'♡'}</button>
+${o?`<b class=badge>${o.s}% match</b>`:''}
+</div>
+<div class=bd><small>${p.brand} · ${p.cat}</small><h3>${p.name}</h3>
+<div class=row><span class=price>${money(p.price)}</span><span class="star sp" title="${p.rating}">${st(p.rating)} <small>${p.rating}</small></span></div>
+<div class=tg>${p.tags.slice(0,3).map(t=>`<span>${t}</span>`).join('')}</div>
+${o?`<ul class=rs>${rl(o.r.slice(0,3))}</ul>`:`<ul><li>${p.pros[0]}</li><li class=neg>${p.cons[0]}</li></ul>`}
+<div class="row" style="margin-top:auto">
+<a class="btn s o" href="#/product/${p.id}">Details</a>
+<label class=sp style="font-size:13px"><input type=checkbox style="width:auto" data-id="${p.id}" ${S.cmp.includes(p.id)?'checked':''}> Compare</label>
+</div></div></article>`;
+
+const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2400)};
+const go=h=>{if(location.hash==h)render();else location.hash=h};
+function updateWishCount(){const el=$('#wc');if(el)el.textContent=S.wish.length;}
+
+function tray(){
+  const t=$('#tray'),n=S.cmp.length;
+  t.style.display=n?'flex':'none';
+  t.innerHTML=`${n} selected <a class="btn s" href="#/cmp">Compare${n<2?' (pick 2+)':''}</a><button class="ib" data-a=clr>Clear</button>`;
+}
+
+const V={};
+
+V.cat=()=>{
+  const brands=[...new Set(S.prods.map(p=>p.brand))];
+  return `<section class=hero>
+<h1>Find the product that fits how you actually use it.</h1>
+<p>Tell us your budget, priorities and deal-breakers. Fitwise scores every product against them and shows exactly why each one ranks where it does.</p>
+<div class=row><a class=btn href="#/adv">▶ Start the needs analysis</a><a class="btn o" href="#/cmp">Compare products</a></div>
+<div class=hero-stats>
+<div class=hero-stat><b>${S.prods.length}</b><small>Products</small></div>
+<div class=hero-stat><b>${S.cats.length}</b><small>Categories</small></div>
+<div class=hero-stat><b>${brands.length}</b><small>Brands</small></div>
+<div class=hero-stat><b>${S.sess.length}</b><small>Saved sessions</small></div>
+</div></section>
+<div class=cat-pills>
+<button class="cat-pill ${!S.f.cat?'on':''}" data-a=setCat data-i="">All</button>
+${S.cats.map(c=>`<button class="cat-pill ${S.f.cat==c?'on':''}" data-a=setCat data-i="${c}">${c}</button>`).join('')}
+</div>
+<div class=bar-f>
+<input id=fq placeholder="Search name or brand..." value="${S.f.q}">
+<select id=fb><option value="">All brands${brands.map(b=>`<option ${S.f.brand==b?'selected':''}>${b}`).join('')}</select>
+<select id=fs>${[['pop','Top rated'],['pa','Price: low to high'],['pd','Price: high to low'],['m','Best match']].map(o=>`<option value=${o[0]} ${S.f.sort==o[0]?'selected':''}>${o[1]}`).join('')}</select>
+<button class="btn o s" data-a=exportCSV>↓ Export CSV</button>
+</div>
+<div class=grid id=grid>${gr()}</div>`;
+};
+
+function gr(){
+  const f=S.f,M=mp();
+  let L=S.prods.filter(p=>(!f.cat||p.cat==f.cat)&&(!f.brand||p.brand==f.brand)&&(p.name+p.brand).toLowerCase().includes(f.q.toLowerCase()));
+  L.sort((a,b)=>f.sort=='pa'?a.price-b.price:f.sort=='pd'?b.price-a.price:f.sort=='m'?((M[b.id]||{s:0}).s-(M[a.id]||{s:0}).s):b.rating-a.rating);
+  return L.map(p=>card(p,f.sort=='m'?M[p.id]:null)).join('')||'<p class=mut>No products match. Clear the search or pick another category.</p>';
+}
+
+V.adv=()=>{
+  const q=S.q,L=S.prods.filter(p=>p.cat==q.cat),F=[...new Set(L.flatMap(p=>p.tags))],B=[...new Set(L.map(p=>p.brand))];
+  const ch=(n,v,c,t='checkbox',l=v)=>`<label class=chip><input type=${t} name=${n} value="${v}" ${c?'checked':''}><span>${l}</span></label>`;
+  return `<div class=prog-steps><div class="prog-step done">Category</div><div class="prog-step done">Purpose</div><div class="prog-step active">Features</div><div class="prog-step">Priorities</div><div class="prog-step">Deal-breakers</div></div>
+<h1>Needs analysis</h1><p class=mut>Five short steps. Nothing is required except your budget.</p>
+<form id=af class=form>
+<fieldset><legend>1. Category &amp; budget</legend><div class=two>
+<label class=fld>Category<select name=cat id=acat>${S.cats.map(c=>`<option ${q.cat==c?'selected':''}>${c}`).join('')}</select></label>
+<label class=fld>Session name<input name=name value="${q.name||''}" placeholder="e.g. Laptop for college"></label>
+<label class=fld>Minimum budget (₹)<input type=number name=min min=0 value=${q.min}></label>
+<label class=fld>Maximum budget (₹)<input type=number name=max min=1 required value=${q.max}></label>
+</div></fieldset>
+<fieldset><legend>2. Main purpose</legend><div class=chips>${USES.map(u=>ch('use',u,q.use==u,'radio',u[0].toUpperCase()+u.slice(1))).join('')}</div></fieldset>
+<fieldset><legend>3. Features</legend>
+<p class=mut>Must-haves lower a product score sharply when missing. Nice-to-haves add a small bonus.</p>
+<b>Must-have</b><div class=chips>${F.map(t=>ch('must',t,q.must.includes(t))).join('')}</div><br>
+<b>Nice-to-have</b><div class=chips>${F.map(t=>ch('nice',t,q.nice.includes(t))).join('')}</div><br>
+<b>Preferred brands</b><div class=chips>${B.map(t=>ch('brands',t,q.brands.includes(t))).join('')}</div>
+</fieldset>
+<fieldset><legend>4. Rank your priorities</legend><p class=mut>Most important first.</p>
+<ol class=prio>${q.prio.map((k,i)=>`<li>${PN[k]}<span><button type=button class=ib data-a=mv data-i="${i},-1" aria-label="Move up">▲</button> <button type=button class=ib data-a=mv data-i="${i},1" aria-label="Move down">▼</button></span></li>`).join('')}</ol>
+</fieldset>
+<fieldset><legend>5. Deal-breakers</legend><div class=chips>${DEAL.map(d=>ch('deal',d[0],q.deal.includes(d[0]),'checkbox',d[1])).join('')}</div></fieldset>
+<div><button class=btn>✨ Get my recommendations</button></div>
+</form>`;
+};
+
+V.res=()=>{
+  if(!S.cur)return V.adv();
+  const q=S.cur.q,{out,ex}=rec(q);
+  if(!out.length)return `<h2>No products match</h2><p>Your deal-breakers excluded everything in ${q.cat}. Remove one and try again.</p><a class=btn href="#/adv">Edit answers</a>`;
+  const t=out[0],n=out.length,bp=[...out].sort((a,b)=>a.p.price-b.p.price);
+  const tiers=['Budget','Mid-range','Premium'].map((l,i)=>{
+    const a=Math.floor(i*n/3),sl=bp.slice(a,Math.max(Math.floor((i+1)*n/3),a+1)).sort((x,y)=>y.s-x.s)[0];
+    return[l,sl];
+  });
+  return `<div class=row style="margin-bottom:16px">
+<h2 style="margin:0">${S.cur.name}</h2>
+<button class="btn s o" data-a=printReport>Print report</button>
+<button class="btn s g" data-a=exportResultCSV>↓ Export CSV</button>
+</div>
+<p class=mut>${q.cat}, ${q.use} use, budget ${money(q.min)} to ${money(q.max)}. Priorities: ${q.prio.map(k=>PN[k]).join(', ')}.</p>
+<h3>Best for you</h3>
+<div class="card best-c">
+<div class=ring style="--v:${t.s}"><span>${t.s}%</span></div>
+<div><small>${t.p.brand}</small><h2>${t.p.name} <span class=price>${money(t.p.price)}</span></h2>
+<ul class=rs>${rl(t.r)}</ul>
+<div class=row style="margin-top:12px">
+<a class=btn href="#/product/${t.p.id}">View details</a>
+<label><input type=checkbox style="width:auto" data-id="${t.p.id}" ${S.cmp.includes(t.p.id)?'checked':''}> Compare</label>
+<button class="btn s o" data-a=toggleWish data-i="${t.p.id}">${S.wish.includes(t.p.id)?'♥ Wishlisted':'♡ Wishlist'}</button>
+</div></div></div>
+<h3>Alternatives by budget tier</h3>
+<div class=tiers>${tiers.map(([l,o])=>`<div class=card style="padding:14px"><small>${l}</small><h3>${o.p.name}</h3><div class=row><span class=price>${money(o.p.price)}</span><b class=sp style="color:var(--acc)">${o.s}% match</b></div><div class=bar><i style="width:${o.s}%"></i></div><p class=mut style="margin:8px 0">${o.r[1]||o.r[0]}</p><a class="btn s o" href="#/product/${o.p.id}">Details</a></div>`).join('')}</div>
+<h3>All ranked matches</h3>
+<div class=grid>${out.map(o=>card(o.p,o)).join('')}</div>
+${ex.length?`<details style="margin-top:20px"><summary>${ex.length} excluded by your deal-breakers</summary><ul>${ex.map(o=>`<li>${o.p.name}: ${o.bad.map(d=>d[1]).join(', ')}</li>`).join('')}</ul></details>`:''}`;
+};
+
+V.product=id=>{
+  const p=S.prods.find(x=>x.id==+id);
+  if(!p)return V.cat();
+  const o=mp()[p.id];
+  const revs=(S.reviews[p.id]||[]);
+  const avgRev=revs.length?revs.reduce((a,r)=>a+r.rating,0)/revs.length:p.rating;
+  const priceHistory=genPriceHistory(p.price);
+  const chartId='ph'+p.id;
+  setTimeout(()=>{
+    const ctx=$('#'+chartId);
+    if(!ctx||ctx._chart)return;
+    ctx._chart=new Chart(ctx,{type:'line',data:{labels:priceHistory.map(x=>x.m),datasets:[{data:priceHistory.map(x=>x.v),borderColor:'var(--acc)',backgroundColor:'rgba(14,124,134,.1)',fill:true,tension:.4,pointRadius:3}]},options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₹'+Math.round(v/1000)+'k'}},x:{grid:{display:false}}},responsive:true,maintainAspectRatio:false}});
+  },100);
+  return `<a href="#/cat" class=mut>← Back to catalog</a>
+<div class=cols style="margin-top:12px">
+<div class=card><div class="img" style="--h:${p.id*47%360};height:240px;font-size:96px">${p.e}</div></div>
+<div><small>${p.brand} · ${p.cat}</small><h1>${p.name}</h1>
+<div class=row><span class=price>${money(p.price)}</span><span class=star>${st(avgRev)} <small>${avgRev.toFixed(1)} / 5</small></span></div>
+<div class=tg style="margin:10px 0">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+${o?`<div class=card style="padding:12px;margin:10px 0;border-color:var(--acc)"><b style="color:var(--acc)">${o.s}% match for your needs</b><ul class=rs>${rl(o.r)}</ul></div>`:''}
+<div class=row style="margin-top:12px">
+<button class="btn" data-a=toggleWish data-i="${p.id}">${S.wish.includes(p.id)?'♥ Wishlisted':'♡ Add to Wishlist'}</button>
+<label><input type=checkbox style="width:auto" data-id="${p.id}" ${S.cmp.includes(p.id)?'checked':''}> Compare</label>
+</div></div></div>
+<div class=tab-bar>
+<button class="tab on" data-a=switchTab data-i=specs>Specs</button>
+<button class="tab" data-a=switchTab data-i=scores>Scores</button>
+<button class="tab" data-a=switchTab data-i=price>Price History</button>
+<button class="tab" data-a=switchTab data-i=reviews>Reviews (${revs.length})</button>
+</div>
+<div id=tab-specs>
+<div class=cols>
+<div><h3>Specifications</h3><table class=spec-table>${Object.entries(p.specs).map(([k,v])=>`<tr><th>${k}</th><td>${v}</td></tr>`).join('')}<tr><th>Battery</th><td>${p.batt?p.batt+' h':'N/A'}</td></tr></table></div>
+<div><h3>Pros &amp; Cons</h3><b>Pros</b><ul class=rs>${p.pros.map(x=>`<li>${x}</li>`).join('')}</ul><br><b>Cons</b><ul class=rs>${p.cons.map(x=>`<li class=neg>${x}</li>`).join('')}</ul></div>
+</div></div>
+<div id=tab-scores style=display:none>
+<div class=score-grid>
+${[['perf','⚡ Performance'],['dur','🛡️ Durability'],['des','✨ Design'],['sup','🏥 Support']].map(([k,l])=>`<div class=score-card><b>${p[k]}/10</b><small>${l}</small></div>`).join('')}
+</div>
+${[['perf','Performance'],['dur','Durability'],['des','Design'],['sup','After-sales support']].map(([k,l])=>`<p style="margin:8px 0 2px">${l} <b>${p[k]}/10</b></p><div class=bar><i style="width:${p[k]*10}%"></i></div>`).join('')}
+</div>
+<div id=tab-price style=display:none>
+<h3>Price trend (last 6 months)</h3>
+<div style="height:200px;position:relative"><canvas id="${chartId}"></canvas></div>
+<p class=mut style="font-size:12px;margin-top:8px">Simulated price history for demonstration.</p>
+</div>
+<div id=tab-reviews style=display:none>
+<h3>Customer reviews</h3>
+${revs.map(r=>`<div class=rv><div class=rv-meta><div class=rv-avatar>${r.name[0].toUpperCase()}</div><div><b>${r.name}</b> <span class=star>${st(r.rating)}</span><br><small class=mut>${r.date}</small></div></div><p style="margin:4px 0">${r.text}</p></div>`).join('')}
+${!revs.length?'<p class=mut>No reviews yet. Be the first!</p>':''}
+<div class=card style="padding:16px;margin-top:16px">
+<h3>Write a review</h3>
+<form id=rvf data-pid="${p.id}">
+<div class=two>
+<label class=fld>Your name<input name=name required placeholder="Your name"></label>
+<label class=fld>Rating<select name=rating>${[5,4,3,2,1].map(n=>`<option value=${n}>${n} star${n>1?'s':''}</option>`).join('')}</select></label>
+</div>
+<label class=fld>Review<textarea name=text rows=3 required placeholder="Share your experience..."></textarea></label>
+<button class=btn>Submit review</button>
+</form></div>
+</div>`;
+};
+
+function genPriceHistory(price){
+  const months=['Jan','Feb','Mar','Apr','May','Jun'],base=price;
+  return months.map((m,i)=>({m,v:Math.round(base*(0.92+Math.random()*.16))}));
+}
+
+function switchTab(name){
+  ['specs','scores','price','reviews'].forEach(t=>{
+    const el=$('#tab-'+t);
+    if(el)el.style.display=t==name?'':'none';
+  });
+  $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.i==name));
+}
+
+// AI Chat
+const CHAT_RESPONSES=[
+  [/budget|cheap|affordable|price/i,'For budget picks, I recommend checking the Catalog with "Price: low to high" sort. You can also set a max budget in the Advisor to filter results automatically.'],
+  [/best laptop/i,'The MacBook Air M3 is top-rated for battery and silence. For gaming, the ASUS ROG Zephyrus G14 is unbeatable. For value, the Lenovo ThinkPad E14 is excellent.'],
+  [/best phone|best smartphone/i,'The iPhone 15 and Samsung Galaxy S24 are top-rated. For value, the Google Pixel 8a offers flagship cameras at a lower price.'],
+  [/gaming/i,'For gaming laptops, check the ASUS ROG Zephyrus G14. For gaming phones, the OnePlus 12 has the fastest charging and top performance.'],
+  [/student/i,'For students, the Acer Aspire 5 (laptop) and Samsung Galaxy A35 (phone) offer the best value. The Lenovo Tab P12 is a great affordable tablet.'],
+  [/camera/i,'Best cameras: Google Pixel 8a for smartphones (64MP, AI processing), iPad Air M2 for tablets, Sony WH-1000XM5 for headphones with clear call quality.'],
+  [/battery/i,'Longest battery: JBL Tune 770NC (44h headphones), Samsung Galaxy Watch 6 (40h smartwatch), OnePlus 12 (26h phone), HP Spectre x360 (14h laptop).'],
+  [/compare/i,'Use the Compare feature! Tick the Compare checkbox on any product card, then visit the Compare page to see a side-by-side table.'],
+  [/recommend|suggest|help/i,'Start the Needs Analysis (Advisor tab) — answer 5 quick questions about your budget, use case and priorities, and I will score every product for you.'],
+  [/tablet/i,'Top tablets: iPad Air M2 for power users, Samsung Galaxy Tab S9 for Android fans, Lenovo Tab P12 for budget buyers.'],
+  [/headphone|earphone/i,'Sony WH-1000XM5 has the best ANC. Bose QC45 is most comfortable. Sennheiser HD 560S is best for audiophiles. JBL Tune 770NC is the budget pick.'],
+  [/watch|smartwatch/i,'Apple Watch Series 9 is best overall (iPhone users). Samsung Galaxy Watch 6 for Android. Garmin Forerunner 265 for fitness tracking.'],
+  [/dark mode|theme/i,'Click the ◐ button in the top-right corner of the header to toggle dark mode.'],
+  [/wishlist/i,'Click the heart icon on any product card to add it to your Wishlist. View all saved items under the Wishlist tab.'],
+  [/export|download|csv/i,'You can export the catalog or your results as a CSV file using the Export CSV button on the Catalog or Results page.'],
+  [/hi|hello|hey/i,'Hi there! I am the Fitwise AI Assistant. Ask me about products, comparisons, recommendations, or how to use any feature.'],
+  [/thank/i,'You are welcome! Let me know if you need anything else.']
+];
+
+function chatReply(msg){
+  const m=msg.toLowerCase();
+  for(const[re,ans]of CHAT_RESPONSES){if(re.test(m))return ans;}
+  const words=m.split(/\s+/);
+  const match=S.prods.find(p=>words.some(w=>w.length>3&&p.name.toLowerCase().includes(w)));
+  if(match)return `The ${match.name} by ${match.brand} is priced at ${money(match.price)}, rated ${match.rating}/5. ${match.pros[0]}. <a href="#/product/${match.id}" style="color:var(--acc)">View details</a>`;
+  return 'I am not sure about that. Try asking about a specific product, category, or feature like battery, camera, or gaming. Or use the Advisor for personalised recommendations!';
+}
+
+function chatAddMsg(text,role){
+  const msgs=$('#chatMsgs');
+  if(!msgs)return;
+  const d=document.createElement('div');
+  d.className='msg '+role;
+  d.innerHTML=text;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function chatInit(){
+  const msgs=$('#chatMsgs');
+  if(!msgs||msgs.children.length)return;
+  chatAddMsg('Hi! I am your Fitwise AI Assistant. Ask me about products, budgets, comparisons, or recommendations!','bot');
+}
+
+// Export helpers
+function exportCSV(data,filename){
+  const keys=Object.keys(data[0]);
+  const rows=[keys.join(','),...data.map(r=>keys.map(k=>JSON.stringify(r[k]??'')).join(','))];
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.join('\n'));
+  a.download=filename;
+  a.click();
+}
+
+function rd(){
+  const f=$('#af');
+  if(!f)return;
+  const d=new FormData(f);
+  S.q={...S.q,cat:d.get('cat'),name:d.get('name'),min:+d.get('min')||0,max:+d.get('max')||0,use:d.get('use')||S.q.use,must:d.getAll('must'),nice:d.getAll('nice').filter(x=>!d.getAll('must').includes(x)),brands:d.getAll('brands'),deal:d.getAll('deal')};
+}
+
+const A={
+  th(){const t=document.documentElement.dataset.theme=='dark'?'light':'dark';document.documentElement.dataset.theme=t;sv('fw_t',t)},
+  mv(i){rd();const[a,d]=i.split(',').map(Number),p=S.q.prio,b=a+d;if(b<0||b>4)return;[p[a],p[b]]=[p[b],p[a]];render()},
+  clr(){S.cmp=[];render()},
+  rm(i){S.cmp=S.cmp.filter(x=>x!=+i);render()},
+  so(i){S.cur=S.sess.find(s=>s.id==+i);S.q={...S.cur.q};go('#/res')},
+  sd(i){S.sess=S.sess.filter(s=>s.id!=+i);if(S.cur&&S.cur.id==+i)S.cur=null;save();render()},
+  newp(){S.edit='new';render()},
+  edit(i){S.edit=+i;render()},
+  cancel(){S.edit=null;render()},
+  del(i){if(!confirm('Delete this product?'))return;S.prods=S.prods.filter(p=>p.id!=+i);S.cmp=S.cmp.filter(x=>x!=+i);S.wish=S.wish.filter(x=>x!=+i);save();render();toast('Product deleted')},
+  dcat(c){if(S.prods.some(p=>p.cat==c))return toast('Move or delete products in '+c+' first');S.cats=S.cats.filter(x=>x!=c);save();render()},
+  reset(){if(!confirm('Restore sample catalog? Your edits will be lost.'))return;S.prods=SEED;S.cats=['Laptops','Smartphones','Tablets','Headphones','Smartwatches'];S.edit=null;save();render();toast('Sample data restored')},
+  setCat(c){S.f.cat=c;render()},
+  switchTab(name){switchTab(name)},
+  toggleWish(i){
+    const id=+i;
+    if(S.wish.includes(id)){S.wish=S.wish.filter(x=>x!=id);toast('Removed from wishlist');}
+    else{S.wish.push(id);toast('Added to wishlist ♥');}
+    save();updateWishCount();
+    $$(`[data-a=toggleWish][data-i="${id}"]`).forEach(b=>{b.textContent=S.wish.includes(id)?'♥ Wishlisted':'♡ Add to Wishlist';if(b.classList.contains('wish-btn'))b.textContent=S.wish.includes(id)?'♥':'♡';});
+  },
+  clearWish(){if(!confirm('Clear wishlist?'))return;S.wish=[];save();render();toast('Wishlist cleared')},
+  chatToggle(){
+    S.chatOpen=!S.chatOpen;
+    const box=$('#chatBox');
+    if(box){box.style.display=S.chatOpen?'flex':'none';if(S.chatOpen)chatInit();}
+  },
+  chatClose(){S.chatOpen=false;const box=$('#chatBox');if(box)box.style.display='none';},
+  chatSend(){
+    const inp=$('#chatInput');
+    if(!inp||!inp.value.trim())return;
+    const msg=inp.value.trim();
+    inp.value='';
+    chatAddMsg(msg,'user');
+    setTimeout(()=>chatAddMsg(chatReply(msg),'bot'),400);
+  },
+  exportCSV(){
+    const f=S.f;
+    let L=S.prods.filter(p=>(!f.cat||p.cat==f.cat)&&(!f.brand||p.brand==f.brand)&&(p.name+p.brand).toLowerCase().includes(f.q.toLowerCase()));
+    exportCSV(L.map(p=>({Name:p.name,Brand:p.brand,Category:p.cat,Price:p.price,Rating:p.rating,Performance:p.perf,Durability:p.dur,Design:p.des,Support:p.sup,Battery:p.batt,Tags:p.tags.join('; ')})),'fitwise-catalog.csv');
+    toast('CSV downloaded');
+  },
+  exportResultCSV(){
+    if(!S.cur)return;
+    const{out}=rec(S.cur.q);
+    exportCSV(out.map(o=>({Rank:out.indexOf(o)+1,Name:o.p.name,Brand:o.p.brand,Price:o.p.price,Match:o.s+'%',Rating:o.p.rating,Reason:o.r[0]})),'fitwise-results.csv');
+    toast('Results CSV downloaded');
+  },
+  printReport(){window.print()}
+};
+
+function render(){
+  const h=location.hash.slice(2).split('/'),r=V[h[0]]?h[0]:'cat';
+  $('#app').innerHTML=V[r](h[1]);
+  $$('nav a').forEach(a=>a.classList.toggle('on',a.dataset.r==r));
+  updateWishCount();
+  tray();
+  scrollTo(0,0);
+  if(S.chatOpen)setTimeout(chatInit,50);
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-a]');
+  if(t&&A[t.dataset.a])A[t.dataset.a](t.dataset.i);
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='chatInput'){A.chatSend();}
+});
+
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.id){
+    const id=+t.dataset.id;
+    if(t.checked){if(S.cmp.length>=4){t.checked=false;return toast('You can compare up to 4 products');}S.cmp.push(id);}
+    else S.cmp=S.cmp.filter(x=>x!=id);
+    tray();
+  }
+  if(t.id=='acat'){
+    rd();
+    const pr=S.prods.filter(p=>p.cat==S.q.cat).map(p=>p.price).sort((a,b)=>a-b);
+    Object.assign(S.q,{must:[],nice:[],brands:[],min:0,max:pr.length?pr[Math.floor(pr.length*.7)]:50000});
+    render();
+  }
+  if(t.id=='fb'){S.f.brand=t.value;$('#grid').innerHTML=gr();}
+  if(t.id=='fs'){S.f.sort=t.value;$('#grid').innerHTML=gr();}
+});
+
+document.addEventListener('input',e=>{
+  if(e.target.id=='fq'){S.f.q=e.target.value;$('#grid').innerHTML=gr();}
+});
+
+document.addEventListener('submit',e=>{
+  e.preventDefault();
+  const id=e.target.id;
+  if(id=='af'){
+    rd();
+    const q=S.q;
+    if(q.max<q.min)return toast('Maximum budget must be higher than minimum');
+    sv('fw_q',q);
+    $('#app').innerHTML=`<h2>Analysing ${S.prods.filter(p=>p.cat==q.cat).length} products…</h2><p class=mut>Scoring budget fit, priorities, features and deal-breakers.</p><div class=grid>${'<div class=sk></div>'.repeat(6)}</div>`;
+    setTimeout(()=>{
+      S.cur={id:Date.now(),name:q.name||`${q.cat}, ${q.use}`,date:new Date().toLocaleString(),q:{...q}};
+      S.sess=[S.cur,...S.sess].slice(0,20);
+      save();
+      go('#/res');
+      toast('Session saved ✓');
+    },900);
+  }
+  if(id=='cf'){
+    const c=e.target.c.value.trim();
+    if(c&&!S.cats.includes(c)){S.cats.push(esc(c));save();render();}
+  }
+  if(id=='pf'){
+    const d=Object.fromEntries(new FormData(e.target));
+    const n=k=>+d[k]||0,s=k=>esc(d[k].trim()),l=(k,sp)=>s(k).split(sp).map(x=>x.trim()).filter(Boolean);
+    const o={id:S.edit=='new'?Date.now():+S.edit,cat:d.cat,brand:s('brand'),name:s('name'),price:n('price'),rating:Math.min(5,n('rating')),perf:n('perf'),dur:n('dur'),des:n('des'),sup:n('sup'),batt:n('batt'),e:esc(d.e||'📦'),tags:l('tags',','),use:l('use',',').map(x=>x.toLowerCase()),pros:l('pros','|').length?l('pros','|'):['None listed'],cons:l('cons','|').length?l('cons','|'):['None listed'],specs:Object.fromEntries(d.specs.split('\n').map(x=>x.split(/:(.*)/s)).filter(a=>a[1]&&a[0].trim()).map(a=>[esc(a[0].trim()),esc(a[1].trim())]))};
+    const idx=S.prods.findIndex(p=>p.id==o.id);
+    idx<0?S.prods.push(o):S.prods[idx]=o;
+    S.edit=null;save();render();toast('Product saved ✓');
+  }
+  if(id=='rvf'){
+    const d=Object.fromEntries(new FormData(e.target));
+    const pid=+e.target.dataset.pid;
+    if(!S.reviews[pid])S.reviews[pid]=[];
+    S.reviews[pid].unshift({name:esc(d.name),rating:+d.rating,text:esc(d.text),date:new Date().toLocaleDateString('en-IN')});
+    save();render();toast('Review submitted ✓');
+  }
+});
+
+document.documentElement.dataset.theme=ld('fw_t',matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+addEventListener('hashchange',render);
+render();
+
+V.cmp=()=>{
+  const L=S.cmp.map(i=>S.prods.find(p=>p.id==i)).filter(Boolean);
+  if(L.length<2)return `<h2>Compare products</h2><p>Tick Compare on 2 to 4 products in the catalog or results.</p><a class=btn href="#/cat">Browse catalog</a>`;
+  const M=mp();
+  const row=(l,f,d,fm=x=>x)=>{const v=L.map(f),b=d?(d>0?Math.max(...v):Math.min(...v)):null;return `<tr><th>${l}</th>${v.map(x=>`<td class="${b!==null&&x==b?'best':''}">${fm(x)}</td>`).join('')}</tr>`};
+  const sk=[...new Set(L.flatMap(p=>Object.keys(p.specs)))];
+  const tg=[...new Set(L.flatMap(p=>p.tags))];
+  return `<div class=row style="margin-bottom:16px"><h2 style="margin:0">Side-by-side comparison</h2><button class="btn s o" data-a=printReport>Print</button></div>
+<div class=tw><table>
+<tr><th></th>${L.map(p=>`<td><b>${p.e} ${p.name}</b><br><small>${p.brand}</small><br><a href="#/product/${p.id}">Details</a> <button class="ib" data-a=rm data-i=${p.id}>Remove</button></td>`).join('')}</tr>
+${S.cur?row('Match for you',p=>M[p.id]?M[p.id].s:0,1,x=>x?x+'%':'n/a'):''}
+${row('Price',p=>p.price,-1,money)}
+${row('Rating',p=>p.rating,1,x=>x+' / 5')}
+${row('Performance',p=>p.perf,1,x=>x+'/10')}
+${row('Durability',p=>p.dur,1,x=>x+'/10')}
+${row('Design',p=>p.des,1,x=>x+'/10')}
+${row('Support',p=>p.sup,1,x=>x+'/10')}
+${row('Battery',p=>p.batt,1,x=>p.batt?x+' h':'N/A')}
+${sk.map(k=>row(k,p=>p.specs[k]||'–')).join('')}
+${tg.map(k=>row(k,p=>p.tags.includes(k)?'✓':'–')).join('')}
+${row('Pros',p=>p.pros.join('; '))}
+${row('Cons',p=>p.cons.join('; '))}
+</table></div>`;
+};
+
+V.wish=()=>{
+  const L=S.wish.map(i=>S.prods.find(p=>p.id==i)).filter(Boolean);
+  if(!L.length)return `<div class=empty-state><div class=empty-icon>♡</div><h2>Your wishlist is empty</h2><p>Tap the heart icon on any product to save it here.</p><a class=btn href="#/cat">Browse catalog</a></div>`;
+  return `<div class=row style="margin-bottom:16px"><h2 style="margin:0">Wishlist (${L.length})</h2><button class="btn d s" data-a=clearWish>Clear all</button></div>
+<div class=grid>${L.map(p=>card(p,mp()[p.id])).join('')}</div>`;
+};
+
+V.sess=()=>`<h2>Saved sessions</h2>
+${S.sess.length?S.sess.map(s=>{
+  const t=rec(s.q).out[0];
+  return `<div class="card row" style="padding:14px;margin-bottom:10px">
+<div><b>${s.name}</b><br><small>${s.date} · ${s.q.cat}, ${money(s.q.max)} max${t?` · top pick: ${t.p.name} (${t.s}%)`:''}</small></div>
+<span class=sp><button class="btn s" data-a=so data-i=${s.id}>Reopen</button> <button class="btn s d" data-a=sd data-i=${s.id}>Delete</button></span>
+</div>`;
+}).join(''):'<div class=empty-state><div class=empty-icon>💾</div><p>Nothing saved yet. Every completed needs analysis is saved here automatically.</p><a class=btn href="#/adv">Start an analysis</a></div>'}`;
+
+V.admin=()=>{
+  const e=S.edit,p=e&&e!='new'?S.prods.find(x=>x.id==e):null,v=k=>p?p[k]:'';
+  const fi=(n,l,val='',t='text')=>`<label class=fld>${l}<input name=${n} type=${t} value="${esc(String(val))}" ${t=='number'?'step=any':''}></label>`;
+  return `<h2>Admin panel</h2>
+<div class=row style="margin-bottom:16px">
+<button class=btn data-a=newp>+ Add product</button>
+<button class="btn o" data-a=reset>Reset demo data</button>
+</div>
+${e?`<form id=pf class="card form" style="padding:16px;margin:16px 0;max-width:none">
+<h3>${p?'Edit':'New'} product</h3>
+<div class=two>
+${fi('name','Name',v('name'))}${fi('brand','Brand',v('brand'))}
+<label class=fld>Category<select name=cat>${S.cats.map(c=>`<option ${v('cat')==c?'selected':''}>${c}`).join('')}</select></label>
+${fi('price','Price (₹)',v('price'),'number')}${fi('rating','Rating (0-5)',v('rating'),'number')}${fi('batt','Battery (hours)',v('batt'),'number')}
+${fi('e','Emoji',v('e')||'📦')}${fi('perf','Performance (0-10)',v('perf'),'number')}${fi('dur','Durability (0-10)',v('dur'),'number')}
+${fi('des','Design (0-10)',v('des'),'number')}${fi('sup','Support (0-10)',v('sup'),'number')}
+</div>
+${fi('tags','Features (comma separated)',p?p.tags.join(', '):'')}
+${fi('use','Best for (work,gaming,creative,student,travel,everyday)',p?p.use.join(', '):'')}
+${fi('pros','Pros (separate with |)',p?p.pros.join('|'):'')}
+${fi('cons','Cons (separate with |)',p?p.cons.join('|'):'')}
+<label class=fld>Specs, one per line as Name: value<textarea name=specs rows=4>${p?Object.entries(p.specs).map(([k,x])=>k+': '+x).join('\n'):''}</textarea></label>
+<div class=row><button class=btn>Save product</button><button type=button class="btn o" data-a=cancel>Cancel</button></div>
+</form>`:''}
+<div class=tw style="margin-top:16px"><table>
+<tr><th>Product</th><th>Category</th><th>Price</th><th>Rating</th><th></th></tr>
+${S.prods.map(p=>`<tr><th>${p.e} ${p.name}</th><td>${p.cat}</td><td>${money(p.price)}</td><td>${st(p.rating)} ${p.rating}</td><td><button class="btn s o" data-a=edit data-i=${p.id}>Edit</button> <button class="btn s d" data-a=del data-i=${p.id}>Delete</button></td></tr>`).join('')}
+</table></div>
+<h3 style="margin-top:24px">Categories</h3>
+<div class=chips>${S.cats.map(c=>`<span class=card style="padding:6px 12px">${c} <button class=ib data-a=dcat data-i="${c}" aria-label="Delete ${c}">×</button></span>`).join('')}</div>
+<form id=cf class=row style="margin-top:10px"><input name=c placeholder="New category" style="max-width:240px" required><button class="btn s">Add category</button></form>`;
+};
+</script>
+<footer>
+<div class=footer-inner>
+<div class=footer-brand>
+<div class=logo style="font-size:18px"><span class=logo-icon>F</span>Fitwise</div>
+<p>An AI-powered product advisor that scores every product against your real needs — budget, priorities, and deal-breakers.</p>
+</div>
+<div class=footer-links>
+<h4>Explore</h4>
+<a href="#/cat">Catalog</a>
+<a href="#/adv">Needs Advisor</a>
+<a href="#/cmp">Compare</a>
+<a href="#/wish">Wishlist</a>
+</div>
+<div class=footer-links>
+<h4>Categories</h4>
+<a href="#/cat" data-a=setCat data-i=Laptops>Laptops</a>
+<a href="#/cat" data-a=setCat data-i=Smartphones>Smartphones</a>
+<a href="#/cat" data-a=setCat data-i=Tablets>Tablets</a>
+<a href="#/cat" data-a=setCat data-i=Headphones>Headphones</a>
+<a href="#/cat" data-a=setCat data-i=Smartwatches>Smartwatches</a>
+</div>
+<div class=footer-links>
+<h4>Project Info</h4>
+<a href="#/admin">Admin Panel</a>
+<a href="#/sess">Saved Sessions</a>
+<p style="font-size:12px;color:var(--mut);margin-top:8px">Built as a final year project. All data is stored locally in your browser.</p>
+</div>
+</div>
+<div class=footer-bottom>
+<span>&copy; 2025 Fitwise Product Advisor &mdash; Final Year Project</span>
+<span>Built with vanilla HTML, CSS &amp; JavaScript</span>
+</div>
+</footer>
+</body>
+</html>
